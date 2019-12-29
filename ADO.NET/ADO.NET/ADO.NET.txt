@@ -1,0 +1,56 @@
+#Inline Connection String 01
+
+string cs = @"Server=.\webdev; Database=northwind; Integrated Security=true"; or
+			"Server=.\\webdev; Database=northwind; Integrated Security=true"; or
+			"Server=.\\webdev; Database=northwind; Trusted_Connection=true";
+            using (SqlConnection con = new SqlConnection(cs))
+            {
+                SqlCommand cmd = new SqlCommand("select * from customers", con);
+                con.Open();
+                GridView1.DataSource = cmd.ExecuteReader();
+                GridView1.DataBind();
+            }
+
+#Web Config 01
+
+string cs = ConfigurationManager.ConnectionStrings["dbcs"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(cs))
+            {
+                SqlCommand cmd = new SqlCommand("select * from customers", con);
+                con.Open();
+                GridView1.DataSource = cmd.ExecuteReader();
+                GridView1.DataBind();
+            }
+
+<connectionStrings>
+    <add name="dbcs" 
+         connectionString="Server=.\webdev; Database=northwind; Trusted_Connection=true;" 
+         providerName="System.Data.SqlClient"/>
+</connectionStrings>
+
+#SqlDataAdapter + Dataset 01 using stored procedure
+
+ string cs = ConfigurationManager.ConnectionStrings["dbcs"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(cs))
+            {
+                SqlDataAdapter da = new SqlDataAdapter("spGetAllCity", con);
+                da.SelectCommand.CommandType = CommandType.StoredProcedure;
+                DataSet ds = new DataSet();
+                da.Fill(ds);
+                GridView1.DataSource = ds;
+                GridView1.DataBind();
+            }        
+
+
+#SqlDataAdapter + Dataset 01 using stored proc with parameters
+string cs = ConfigurationManager.ConnectionStrings["dbcs"].ConnectionString;
+            using (SqlConnection con = new SqlConnection(cs))
+            {
+                SqlDataAdapter da = new SqlDataAdapter("spGetCountry", con);
+                da.SelectCommand.CommandType = CommandType.StoredProcedure;
+                da.SelectCommand.Parameters.AddWithValue("@country", TextBox1.Text);
+                DataSet ds = new DataSet();
+                da.Fill(ds);
+                GridView1.DataSource = ds;
+                GridView1.DataBind();
+            }   
